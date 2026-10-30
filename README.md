@@ -1,3 +1,5 @@
+![Banner](banner.png)
+
 ```markdown
 # monitor-filechanges
 Monitors specified directories for file changes using the `watchdog` library.
