@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import logging
 import argparse
 from watchdog.observers import Observer
@@ -92,7 +93,7 @@ def main():
         observer.start()
         logger.info("Monitoring started. Press Ctrl+C to stop.")
         while True:
-            pass
+            time.sleep(1)
     except KeyboardInterrupt:
         logger.info("Stopping monitoring.")
         observer.stop()
