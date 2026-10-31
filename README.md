@@ -59,3 +59,9 @@ Stop with Ctrl+C, which logs `Stopping monitoring.` and exits.
 ## License
 
 GNU General Public License v3.0. See the LICENSE file in this repository.
+
+## Diagrams and maps
+
+I drew the system out in [monitor-filechanges-Visuals](monitor-filechanges-Visuals/): an architecture diagram, a sequence diagram of one file appearing, a flowchart of a run, and a product map, with the written product map, statistics with citations, and the roadmap in [VISUAL.md](monitor-filechanges-Visuals/VISUAL.md). Every sheet also ships as a PNG photograph of the paper page beside its SVG.
+
+![monitor-filechanges architecture](monitor-filechanges-Visuals/architecture.svg)
