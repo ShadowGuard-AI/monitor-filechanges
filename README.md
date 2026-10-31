@@ -51,7 +51,9 @@ Stop with Ctrl+C, which logs `Stopping monitoring.` and exits.
 
 ## Limitations
 
-- If the path does not exist or is not a directory, the program logs an error and exits with status 1.
+- If the path does not exist or is not a directory, the program logs an error and exits with status 1. The directory is validated before the log file is opened, and an unusable `--logfile` path is refused with a plain named error and status 1, with no traceback.
+- If the observer stops running, the program logs a plain monitoring stopped line and exits with status 1.
+- A log file placed inside the monitored directory triggers a startup warning, and events for the log file itself are excluded, so the log never reports itself.
 - Only creation, modification, and deletion events are handled. Move and rename events are not handled separately, and file content is never read.
 - Creating a file usually also logs a modification event for the file and a modification event for its parent directory. That is how the underlying filesystem notifications behave.
 - There are no bundled tests.
