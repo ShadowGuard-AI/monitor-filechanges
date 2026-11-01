@@ -13,7 +13,7 @@ Monitors one directory for file and directory creation, modification, and deleti
 ## Install
 
 ```bash
-git clone https://github.com/ShadowGuardAI/monitor-filechanges.git
+git clone https://github.com/ShadowGuard-AI/monitor-filechanges.git
 cd monitor-filechanges
 pip install -r requirements.txt
 ```
