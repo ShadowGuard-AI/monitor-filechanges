@@ -20,9 +20,20 @@ class FileChangeHandler(FileSystemEventHandler):
         super().__init__()
         self.excluded_path = os.path.realpath(excluded_path) if excluded_path else None
 
+    # The comparison resolves the event path fresh on every
+    # event. Watchdog hands me paths in the spelling of the
+    # directory argument I was scheduled with, and realpath is
+    # what brings the two spellings together, at the cost of a
+    # filesystem lookup per event in a busy directory.
     def _is_excluded(self, event):
         return self.excluded_path and os.path.realpath(event.src_path) == self.excluded_path
 
+    # There is no on_moved in this handler, and watchdog reports
+    # renames as move events, not as a delete plus a create. A
+    # file renamed into the watched directory, out of it, or
+    # within it is therefore invisible to me, which is a real
+    # gap for a monitor whose subject is file changes: the
+    # cheapest way to place a file here leaves no trace in my log.
     def on_created(self, event):
         if self._is_excluded(event):
             return
@@ -37,6 +48,11 @@ class FileChangeHandler(FileSystemEventHandler):
         if event.is_directory:
             logger.info(f"Directory modified: {event.src_path}")
         else:
+            # One save from an editor often arrives as several modified
+            # events, and I log every one of them. There is no settling
+            # window and no coalescing, so my log counts event bursts,
+            # not saves, and a reader counting lines overstates how
+            # often a file really changed.
             logger.info(f"File modified: {event.src_path}")
 
     def on_deleted(self, event):
@@ -110,12 +126,22 @@ def main():
 
     event_handler = FileChangeHandler(excluded_path=args.logfile)
     observer = Observer()
+    # I never reconcile what is on disk against anything. A
+    # change made while this process is not running is simply
+    # not part of my record, and there is no startup scan that
+    # would notice the directory differs from when I last ran.
     observer.schedule(event_handler, directory_to_monitor, recursive=args.recursive)
 
     try:
         observer.start()
         logger.info("Monitoring started. Press Ctrl+C to stop.")
         while True:
+            # Death is detected by polling once a second inside the same
+            # loop that sleeps, so a dead observer and a healthy one look
+            # identical for up to a second, and the exit that follows is
+            # the only signal: nothing distinguishes a monitor that
+            # stopped from one still running unless this error line
+            # was written.
             if not observer.is_alive():
                 logger.error("Monitoring stopped: the observer is no longer running.")
                 sys.exit(1)
